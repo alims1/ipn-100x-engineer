@@ -3,10 +3,12 @@ import restaurantData from '@/data/restaurants.json';
 import dfwRestaurantData from '@/data/restaurants-dfw.json';
 import { calculateDistance, mockGeocode, DEFAULT_COORDINATES } from '@/utils/distance';
 import { loadRestaurantsFromCSV } from '@/utils/csvParser';
+import { searchRestaurantsNearby, isGooglePlacesConfigured } from '@/utils/googlePlaces';
 import { Restaurant } from '@/types/restaurant';
 
 // Number of restaurants to return
 const RESULTS_LIMIT = 5;
+const SEARCH_RADIUS_METERS = 10000; // 10km radius for Google Places search
 
 // Load and combine restaurants from all sources
 function getAllRestaurants(): Restaurant[] {
@@ -55,19 +57,56 @@ export async function GET(request: NextRequest) {
       userLng = DEFAULT_COORDINATES.longitude;
     }
 
-    // Get all restaurants from both JSON and CSV sources
-    const allRestaurants = getAllRestaurants();
+    // Use Google Places API if configured, otherwise use mock data
+    let restaurantsWithDistance: (Restaurant & { distance: number })[];
 
-    // Calculate distance for each restaurant and sort by distance
-    const restaurantsWithDistance = allRestaurants.map((restaurant: Restaurant) => ({
-      ...restaurant,
-      distance: calculateDistance(
-        userLat,
-        userLng,
-        restaurant.latitude,
-        restaurant.longitude
-      ),
-    }));
+    if (isGooglePlacesConfigured()) {
+      try {
+        // Fetch real restaurants from Google Places
+        const googleRestaurants = await searchRestaurantsNearby(
+          userLat,
+          userLng,
+          SEARCH_RADIUS_METERS,
+          20 // Fetch more to have a good selection
+        );
+
+        // Calculate distances
+        restaurantsWithDistance = googleRestaurants.map((restaurant) => ({
+          ...restaurant,
+          distance: calculateDistance(
+            userLat,
+            userLng,
+            restaurant.latitude,
+            restaurant.longitude
+          ),
+        }));
+      } catch (error) {
+        // Fallback to mock data if Google Places fails
+        console.error('Google Places API error, using mock data:', error);
+        const allRestaurants = getAllRestaurants();
+        restaurantsWithDistance = allRestaurants.map((restaurant) => ({
+          ...restaurant,
+          distance: calculateDistance(
+            userLat,
+            userLng,
+            restaurant.latitude,
+            restaurant.longitude
+          ),
+        }));
+      }
+    } else {
+      // Use mock data (existing curated restaurants)
+      const allRestaurants = getAllRestaurants();
+      restaurantsWithDistance = allRestaurants.map((restaurant) => ({
+        ...restaurant,
+        distance: calculateDistance(
+          userLat,
+          userLng,
+          restaurant.latitude,
+          restaurant.longitude
+        ),
+      }));
+    }
 
     // Sort by distance and take the closest ones
     const sortedRestaurants = restaurantsWithDistance
@@ -81,6 +120,7 @@ export async function GET(request: NextRequest) {
         longitude: userLng,
         address: address || 'Default location (San Francisco)',
       },
+      dataSource: isGooglePlacesConfigured() ? 'google_places' : 'mock_data',
     });
   } catch (error) {
     console.error('Error in restaurants API:', error);
