@@ -69,6 +69,7 @@ export function mockGeocode(address: string): { latitude: number; longitude: num
 
   // Simple keyword matching for demo purposes
   const locationMap: Record<string, { latitude: number; longitude: number }> = {
+    // San Francisco locations
     'san francisco': { latitude: 37.7749, longitude: -122.4194 },
     'downtown': { latitude: 37.7879, longitude: -122.4074 },
     'mission': { latitude: 37.7599, longitude: -122.4148 },
@@ -79,6 +80,18 @@ export function mockGeocode(address: string): { latitude: number; longitude: num
     'north beach': { latitude: 37.8060, longitude: -122.4103 },
     'chinatown': { latitude: 37.7941, longitude: -122.4078 },
     'financial district': { latitude: 37.7946, longitude: -122.3999 },
+    // Houston locations
+    'houston': { latitude: 29.7604, longitude: -95.3698 },
+    'houston tx': { latitude: 29.7604, longitude: -95.3698 },
+    // DFW (Dallas-Fort Worth) locations
+    'dallas': { latitude: 32.7767, longitude: -96.7970 },
+    'dallas tx': { latitude: 32.7767, longitude: -96.7970 },
+    'fort worth': { latitude: 32.7555, longitude: -97.3308 },
+    'fort worth tx': { latitude: 32.7555, longitude: -97.3308 },
+    'dfw': { latitude: 32.7767, longitude: -96.7970 },
+    'arlington': { latitude: 32.7357, longitude: -97.1081 },
+    'plano': { latitude: 33.0198, longitude: -96.6989 },
+    'irving': { latitude: 32.8140, longitude: -96.9489 },
     '94102': { latitude: 37.7813, longitude: -122.4167 },
     '94103': { latitude: 37.7726, longitude: -122.4119 },
     '94104': { latitude: 37.7914, longitude: -122.4020 },

@@ -21,10 +21,10 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
   // Add a "Use my location" button that gets the user's current coordinates
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6">
+    <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-md p-6 border border-slate-700">
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="location" className="block text-sm font-medium text-gray-200 mb-2">
             Enter your location
           </label>
           <input
@@ -33,7 +33,7 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Enter address, city, or zip code..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+            className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all text-gray-100 placeholder-gray-400"
             disabled={isLoading}
           />
         </div>
@@ -41,14 +41,14 @@ export default function SearchForm({ onSearch, isLoading }: SearchFormProps) {
           <button
             type="submit"
             disabled={isLoading || !location.trim()}
-            className="w-full sm:w-auto px-6 py-3 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full sm:w-auto px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {isLoading ? 'Searching...' : 'Find Restaurants'}
           </button>
         </div>
       </div>
-      <p className="mt-3 text-sm text-gray-500">
-        💡 Tip: Try searching for "San Francisco", "Downtown", or a zip code like "94102"
+      <p className="mt-3 text-sm text-gray-400">
+        💡 Tip: Try searching for &quot;San Francisco&quot;, &quot;Houston&quot;, &quot;Dallas&quot;, or &quot;Fort Worth&quot;
       </p>
     </form>
   );

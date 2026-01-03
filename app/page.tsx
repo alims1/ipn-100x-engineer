@@ -14,14 +14,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // console.log('Home component rendered'); // Dead code - should be removed
-
   const handleSearch = async (location: string) => {
     setLoading(true);
     setError(null);
     setHasSearched(true);
-
-    console.log('Searching for restaurants near:', location); // Dead code - should be removed
 
     try {
       const response = await fetch(`/api/restaurants?address=${encodeURIComponent(location)}`);
@@ -32,7 +28,6 @@ export default function Home() {
       }
 
       setRestaurants(data.restaurants);
-      console.log('Found restaurants:', data.restaurants.length); // Dead code - should be removed
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       setRestaurants([]);
@@ -42,12 +37,12 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-slate-800 shadow-sm border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900">🍽️ Restaurant Finder</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-100">🍽️ Restaurant Finder</h1>
+          <p className="mt-1 text-sm text-gray-300">
             Find the best restaurants near you
           </p>
         </div>
@@ -65,25 +60,25 @@ export default function Home() {
           {loading && (
             <div className="flex justify-center items-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
-              <span className="ml-3 text-gray-600">Finding restaurants...</span>
+              <span className="ml-3 text-gray-300">Finding restaurants...</span>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-              <p className="text-red-700">{error}</p>
+            <div className="bg-red-900 border border-red-700 rounded-lg p-4 mb-6">
+              <p className="text-red-200">{error}</p>
             </div>
           )}
 
           {!loading && hasSearched && restaurants.length === 0 && !error && (
             <div className="text-center py-12">
-              <p className="text-gray-500">No restaurants found. Try a different location.</p>
+              <p className="text-gray-400">No restaurants found. Try a different location.</p>
             </div>
           )}
 
           {!loading && restaurants.length > 0 && (
             <div>
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              <h2 className="text-xl font-semibold text-gray-200 mb-4">
                 Found {restaurants.length} restaurants near you
               </h2>
               {/* TODO: Workshop Exercise 1 - Add opening hours display */}
@@ -99,11 +94,11 @@ export default function Home() {
           {!hasSearched && (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">🔍</div>
-              <p className="text-gray-500 text-lg">
+              <p className="text-gray-300 text-lg">
                 Enter your location to find nearby restaurants
               </p>
               <p className="text-gray-400 text-sm mt-2">
-                Try searching for "San Francisco" or "94102"
+                Try searching for &quot;San Francisco&quot; or &quot;94102&quot;
               </p>
             </div>
           )}
@@ -114,9 +109,9 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 border-t mt-auto">
+      <footer className="bg-slate-900 border-t border-slate-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-500 text-sm">
+          <p className="text-center text-gray-400 text-sm">
             Restaurant Finder - AI Workshop Demo Application
           </p>
         </div>

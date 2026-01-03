@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import restaurantData from '@/data/restaurants.json';
+import dfwRestaurantData from '@/data/restaurants-dfw.json';
 import { calculateDistance, mockGeocode, DEFAULT_COORDINATES } from '@/utils/distance';
+import { loadRestaurantsFromCSV } from '@/utils/csvParser';
 import { Restaurant } from '@/types/restaurant';
 
 // Number of restaurants to return
 const RESULTS_LIMIT = 5;
+
+// Load and combine restaurants from all sources
+function getAllRestaurants(): Restaurant[] {
+  const sfRestaurants = restaurantData.restaurants;
+  const houstonRestaurants = loadRestaurantsFromCSV();
+  const dfwRestaurants = dfwRestaurantData.restaurants;
+  return [...sfRestaurants, ...houstonRestaurants, ...dfwRestaurants];
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,8 +22,6 @@ export async function GET(request: NextRequest) {
     const address = searchParams.get('address');
     const lat = searchParams.get('lat');
     const lng = searchParams.get('lng');
-
-    console.log('API called with params:', { address, lat, lng }); // Dead code - should be removed
 
     let userLat: number;
     let userLng: number;
@@ -36,7 +44,6 @@ export async function GET(request: NextRequest) {
       if (coords) {
         userLat = coords.latitude;
         userLng = coords.longitude;
-        console.log('Geocoded address to:', coords); // Dead code - should be removed
       } else {
         // Fall back to default coordinates
         userLat = DEFAULT_COORDINATES.latitude;
@@ -48,8 +55,11 @@ export async function GET(request: NextRequest) {
       userLng = DEFAULT_COORDINATES.longitude;
     }
 
+    // Get all restaurants from both JSON and CSV sources
+    const allRestaurants = getAllRestaurants();
+
     // Calculate distance for each restaurant and sort by distance
-    const restaurantsWithDistance = restaurantData.restaurants.map((restaurant: Restaurant) => ({
+    const restaurantsWithDistance = allRestaurants.map((restaurant: Restaurant) => ({
       ...restaurant,
       distance: calculateDistance(
         userLat,
@@ -63,8 +73,6 @@ export async function GET(request: NextRequest) {
     const sortedRestaurants = restaurantsWithDistance
       .sort((a, b) => a.distance - b.distance)
       .slice(0, RESULTS_LIMIT);
-
-    console.log('Returning', sortedRestaurants.length, 'restaurants'); // Dead code - should be removed
 
     return NextResponse.json({
       restaurants: sortedRestaurants,
@@ -90,8 +98,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { latitude, longitude, filters } = body;
 
-    console.log('POST request received:', body); // Dead code - should be removed
-
     if (!latitude || !longitude) {
       return NextResponse.json(
         { error: 'Latitude and longitude are required' },
@@ -99,7 +105,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let restaurants = restaurantData.restaurants;
+    // Get all restaurants from both JSON and CSV sources
+    let restaurants = getAllRestaurants();
 
     // Apply filters if provided
     if (filters) {
